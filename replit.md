@@ -1,6 +1,6 @@
-# [Project name]
+# Local Business QR Hub
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Local Business QR Hub lets a small business publish a mobile storefront, manage its catalog and offers, and share one permanent QR code.
 
 ## Run & Operate
 
@@ -22,23 +22,33 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/qr-hub` — the React/Vite owner dashboard and public `/store` storefront.
+- `artifacts/api-server/src/routes/storefront.ts` — profile, catalog, offers, dashboard summary, and public storefront API.
+- `lib/api-spec/openapi.yaml` — source of truth for generated API hooks and validation.
+- `lib/db/src/schema/` — PostgreSQL schema for the business profile, catalog items, and offers.
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The public storefront and the owner dashboard read from the same API-backed records, so edits are reflected without regenerating a QR code.
+- The initial experience uses one seeded business profile so a first-time owner sees a complete example immediately.
+- `/store` is the permanent public destination; the QR page encodes that route rather than a short-lived preview URL.
+- Images are currently entered as URLs to keep the five-minute setup fast; persistent file storage can be added without changing the public data shape.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Guided owner dashboard with profile checklist and storefront preview.
+- Editable products/services with prices, descriptions, photos, categories, and availability.
+- Editable special offers with activation, codes, and optional expiry dates.
+- Downloadable and printable scannable QR code with shareable public link.
+- Mobile-first public storefront with contact, location, hours, menu, and offers.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+The owner experience should stay fast, clear, and approachable for non-technical small business owners.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- The API server mounts routes under `/api`; the public web route is handled by the QR Hub artifact at `/store`.
 
 ## Pointers
 

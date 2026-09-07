@@ -10,6 +10,14 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: business
+    description: Business profile and dashboard operations
+  - name: catalog
+    description: Products and services
+  - name: offers
+    description: Special offers
+  - name: public
+    description: Public storefront
 paths:
   /healthz:
     get:
@@ -24,7 +32,191 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /business:
+    get:
+      operationId: getBusiness
+      tags: [business]
+      summary: Get the business profile
+      responses:
+        "200":
+          description: Business profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Business"
+    patch:
+      operationId: updateBusiness
+      tags: [business]
+      summary: Update the business profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BusinessUpdate"
+      responses:
+        "200":
+          description: Updated business profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Business"
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [business]
+      summary: Get dashboard summary
+      responses:
+        "200":
+          description: Summary of storefront health
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+  /items:
+    get:
+      operationId: listItems
+      tags: [catalog]
+      summary: List products and services
+      responses:
+        "200":
+          description: Catalog items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Item"
+    post:
+      operationId: createItem
+      tags: [catalog]
+      summary: Create a product or service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemInput"
+      responses:
+        "201":
+          description: Created item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Item"
+  /items/{id}:
+    parameters:
+      - $ref: "#/components/parameters/Id"
+    patch:
+      operationId: updateItem
+      tags: [catalog]
+      summary: Update a product or service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemUpdate"
+      responses:
+        "200":
+          description: Updated item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Item"
+        "404":
+          description: Item not found
+    delete:
+      operationId: deleteItem
+      tags: [catalog]
+      summary: Delete a product or service
+      responses:
+        "204":
+          description: Item deleted
+        "404":
+          description: Item not found
+  /offers:
+    get:
+      operationId: listOffers
+      tags: [offers]
+      summary: List special offers
+      responses:
+        "200":
+          description: Special offers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Offer"
+    post:
+      operationId: createOffer
+      tags: [offers]
+      summary: Create a special offer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OfferInput"
+      responses:
+        "201":
+          description: Created offer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Offer"
+  /offers/{id}:
+    parameters:
+      - $ref: "#/components/parameters/Id"
+    patch:
+      operationId: updateOffer
+      tags: [offers]
+      summary: Update a special offer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OfferUpdate"
+      responses:
+        "200":
+          description: Updated offer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Offer"
+        "404":
+          description: Offer not found
+    delete:
+      operationId: deleteOffer
+      tags: [offers]
+      summary: Delete a special offer
+      responses:
+        "204":
+          description: Offer deleted
+        "404":
+          description: Offer not found
+  /public/storefront:
+    get:
+      operationId: getPublicStorefront
+      tags: [public]
+      summary: Get the public storefront
+      responses:
+        "200":
+          description: Public storefront content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicStorefront"
 components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
   schemas:
     HealthStatus:
       type: object
@@ -33,4 +225,112 @@ components:
           type: string
       required:
         - status
+    Business:
+      type: object
+      required: [id, name, description, phone, location, hours, slug, updatedAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        description: { type: string }
+        phone: { type: string }
+        location: { type: string }
+        hours: { type: string }
+        slug: { type: string }
+        logoUrl: { type: ["string", "null"] }
+        coverImageUrl: { type: ["string", "null"] }
+        updatedAt: { type: string, format: date-time }
+    BusinessUpdate:
+      type: object
+      required: [name, description, phone, location, hours]
+      properties:
+        name: { type: string, minLength: 1 }
+        description: { type: string }
+        phone: { type: string }
+        location: { type: string }
+        hours: { type: string }
+        logoUrl: { type: ["string", "null"] }
+        coverImageUrl: { type: ["string", "null"] }
+    Item:
+      type: object
+      required: [id, name, description, price, category, imageUrl, isAvailable, sortOrder]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        description: { type: string }
+        price: { type: number }
+        category: { type: string }
+        imageUrl: { type: ["string", "null"] }
+        isAvailable: { type: boolean }
+        sortOrder: { type: integer }
+    ItemInput:
+      type: object
+      required: [name, description, price, category]
+      properties:
+        name: { type: string, minLength: 1 }
+        description: { type: string }
+        price: { type: number, minimum: 0 }
+        category: { type: string }
+        imageUrl: { type: ["string", "null"] }
+        isAvailable: { type: boolean }
+        sortOrder: { type: integer }
+    ItemUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        description: { type: string }
+        price: { type: number, minimum: 0 }
+        category: { type: string }
+        imageUrl: { type: ["string", "null"] }
+        isAvailable: { type: boolean }
+        sortOrder: { type: integer }
+    Offer:
+      type: object
+      required: [id, title, description, code, validUntil, isActive]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        description: { type: string }
+        code: { type: string }
+        validUntil: { type: ["string", "null"], format: date }
+        isActive: { type: boolean }
+    OfferInput:
+      type: object
+      required: [title, description, code]
+      properties:
+        title: { type: string, minLength: 1 }
+        description: { type: string }
+        code: { type: string }
+        validUntil: { type: ["string", "null"], format: date }
+        isActive: { type: boolean }
+    OfferUpdate:
+      type: object
+      properties:
+        title: { type: string, minLength: 1 }
+        description: { type: string }
+        code: { type: string }
+        validUntil: { type: ["string", "null"], format: date }
+        isActive: { type: boolean }
+    DashboardSummary:
+      type: object
+      required: [itemCount, offerCount, profileComplete, publicUrl, qrScans]
+      properties:
+        itemCount: { type: integer }
+        offerCount: { type: integer }
+        profileComplete: { type: boolean }
+        publicUrl: { type: string }
+        qrScans: { type: integer }
+    PublicStorefront:
+      type: object
+      required: [business, items, offers]
+      properties:
+        business:
+          $ref: "#/components/schemas/Business"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Item"
+        offers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Offer"
 

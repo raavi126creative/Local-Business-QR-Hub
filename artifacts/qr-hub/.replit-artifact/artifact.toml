@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Local Business QR Hub"
+description = "A fast, simple storefront builder for small businesses to publish their business details, products, offers, and a permanent QR code without writing code."
+version = "1.0.0"
+id = "artifacts/qr-hub"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23237
+
+[services.development]
+run = "pnpm --filter @workspace/qr-hub run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/qr-hub", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/qr-hub/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23237"
+BASE_PATH = "/"

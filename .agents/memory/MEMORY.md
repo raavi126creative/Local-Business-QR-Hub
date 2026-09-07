@@ -1,0 +1,1 @@
+- [QR Hub public destination](qr-hub-decisions.md) — keep the printable QR and all share links pointed at one stable storefront route.
